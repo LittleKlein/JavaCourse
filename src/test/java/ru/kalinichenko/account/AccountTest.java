@@ -19,41 +19,42 @@ class AccountTest {
 
     @Test
     void withOwner() {
-        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {Account acc1 = Account.withOwner(""); });
+        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {Account acc1 = new Account(""); });
         assertNull(thrown.getMessage());
     }
 
     @Test
-    void setBalance1() throws IllegalArgumentException {
-        Account accTest = Account.withOwner("Test");
+    void setBalance1() throws IllegalArgumentException, CloneNotSupportedException {
+        Account accTest = new Account("Test");
         Throwable thrown1 = assertThrows(IllegalArgumentException.class, () -> { accTest.setBalance(null, 1); });
         assertNull(thrown1.getMessage());
     }
 
     @Test
-    void setBalance2() throws IllegalArgumentException {
-        Account accTest = Account.withOwner("Test");
+    void setBalance2() throws IllegalArgumentException, CloneNotSupportedException {
+        Account accTest = new Account("Test");
         Throwable thrown2 = assertThrows(IllegalArgumentException.class, () -> { accTest.setBalance(Currency.RUB, -1); });
         assertNull(thrown2.getMessage());
     }
 
     @Test
-    void saveUndo() throws IllegalArgumentException {
-        Account accTest = Account.withOwner("Test");
-        Throwable thrown = assertThrows(ArrayIndexOutOfBoundsException.class, () -> { accTest.save(); accTest.undo(); accTest.undo(); });
+    void saveUndo() throws IllegalArgumentException, CloneNotSupportedException {
+        Account accTest = new Account("Test");
+        Throwable thrown = assertThrows(ArrayIndexOutOfBoundsException.class, () -> { accTest.setOwner("Another"); accTest.undo(); accTest.undo(); });
         assertNull(thrown.getMessage());
     }
 
     @Test
     void undo() throws CloneNotSupportedException {
-        Account accTest = Account.withOwner("Test");
-        accTest.save();
+        Account accTest = new Account("Test");
+        accTest.setOwner("Another");
         accTest.undo();
     }
 
     @Test
     void save() throws CloneNotSupportedException {
-        Account accTest = Account.withOwner("Test");
-        accTest.save();
+        Account accTest = new Account("Test");
+        Main mn = new Main();
+        mn.save(accTest);
     }
 }

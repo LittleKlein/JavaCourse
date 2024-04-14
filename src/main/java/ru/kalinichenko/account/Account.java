@@ -1,26 +1,25 @@
 package ru.kalinichenko.account;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
-import java.util.Stack;
 
 public class Account implements Cloneable
 {
     protected String owner;
     protected HashMap<Currency, Number> balance = new HashMap<>();
-    protected Stack<Account> history;
+    protected ArrayDeque<Undo> undos;               // история для отмен
 
-    private Account(String owner) {
-        this.owner = owner;
-        history = new Stack<>();
-    }
-    public static Account withOwner(String owner) {
+    public Account (String owner) throws CloneNotSupportedException {
         if(owner==null||owner.isEmpty()) throw new IllegalArgumentException("Owner can not be empty !");
-        return new Account(owner);
+        this.undos = new ArrayDeque<>();
+        this.balance = new HashMap<>();
+        this.setOwner(owner);
     }
 
     public void setOwner(String owner) throws CloneNotSupportedException {
+        String prevOwner = this.owner;
+        undos.push(() -> this.owner = prevOwner);
         this.owner = owner;
-        this.save();
     }
 
     public String getOwner() {
@@ -32,10 +31,15 @@ public class Account implements Cloneable
     }
 
     public void setBalance(Currency cur, double saldo) throws CloneNotSupportedException {
-        if(cur==null) throw new IllegalArgumentException("Currency can not be empty !");
+        if(cur == null) throw new IllegalArgumentException("Currency can not be empty !");
         if(saldo < 0) throw new IllegalArgumentException("Saldo can not be less than zero !");
+
+        Number lastVal = balance.get(cur);
+        if(lastVal == null)
+            undos.push(() -> balance.remove(cur));
+        else
+            undos.push(() -> balance.put(cur, lastVal));
         balance.put(cur, saldo);
-        this.save();
     }
 
     @Override
@@ -60,34 +64,11 @@ public class Account implements Cloneable
 
     public void undo()
     {
-        if(history.isEmpty()){ throw new ArrayIndexOutOfBoundsException("There is no more saved objects !"); }
-        Account prevAccountState = history.pop();
-        System.out.println("     Popped: "+prevAccountState);
-        this.owner = prevAccountState.getOwner();
-        this.balance = (HashMap<Currency, Number>) prevAccountState.balance.clone();
-        System.out.println("              this.owner: "+this.owner);
-        System.out.println("              this.balance: "+this.balance);
+        if(undos.isEmpty()){ throw new ArrayIndexOutOfBoundsException("There is no more saved objects !"); }
+        undos.pop().undo();
     }
+}
 
-    public Account save() throws CloneNotSupportedException {
-        Account savedAccount = (Account) this.clone();
-        history.push(savedAccount);
-        System.out.println("  Pushed: "+savedAccount);
-        return savedAccount;
-    }
-
-    public static void main(String[] args) throws CloneNotSupportedException {
-        Account acc1 = Account.withOwner("Kalinichenko Vyacheslav");
-        acc1.setBalance(Currency.RUB, 1);
-        acc1.setBalance(Currency.EUR, 2);
-        System.out.println("acc1 = "+acc1.toString());
-        acc1.setBalance(Currency.USD, 3);
-        System.out.println("acc1 = "+acc1.toString());
-        acc1.undo();
-        System.out.println("acc1 = "+acc1.toString());
-        acc1.undo();
-        acc1.undo();
-        System.out.println("acc1 = "+acc1.toString());
-        //acc1.undo();
-    }
+interface Undo{
+    void undo();
 }
