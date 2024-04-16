@@ -3,18 +3,6 @@ package ru.kalinichenko.account;
 import java.util.ArrayDeque;
 
 public class Main {
-    public ArrayDeque<AccountCopy> savings;     // история сохранений объекта
-
-    public Main()
-    {
-        this.savings = new ArrayDeque<>();
-    }
-
-    public void save(Account acc) throws CloneNotSupportedException {
-        AccountCopy accCopy = new AccountCopy(acc.getOwner(), acc.getBalance());
-        System.out.println("  Save: " + accCopy);
-        this.savings.push(accCopy);
-    }
 
     public static void main(String[] args) throws CloneNotSupportedException {
         Account acc1 = new Account("Kalinichenko Vyacheslav");
@@ -31,8 +19,7 @@ public class Main {
         acc1.undo();
         System.out.println("acc1 (after another pair of undo) = "+acc1.toString());
 
-        Main mn = new Main();
-        mn.save(acc1);
-        System.out.println("savings array = "+mn.savings.toString());
+        Save acc2 = acc1.save();
+        System.out.println("  Save: " + acc2);
     }
 }
