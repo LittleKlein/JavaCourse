@@ -90,6 +90,6 @@ interface Undo{
     void undo();
 }
 
-interface Save{
+public interface Save{
     public void load();
 }

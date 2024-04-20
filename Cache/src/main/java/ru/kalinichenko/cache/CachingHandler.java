@@ -13,19 +13,29 @@ class CachingHandler implements InvocationHandler {
     boolean isChanged = true;
     private Object tmp;
 
+    private int callCacheCount;
+
     public <T> CachingHandler(T objectIncome) {
         this.target = objectIncome;
+        callCacheCount = 0;
 
         for(Method method: target.getClass().getDeclaredMethods()) {
             this.methods.put(method.getName(), method);
         }
     }
 
+    public int getCallCacheCount() {
+        return callCacheCount;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object res;
+        Method classMeth;
 
-        if(method.isAnnotationPresent(Cache.class)) {
+        classMeth = target.getClass().getMethod(method.getName(), method.getParameterTypes());
+
+        if(classMeth.isAnnotationPresent(Cache.class)) {
             if(isChanged)
             {
                 res = method.invoke(target, args);
@@ -34,11 +44,12 @@ class CachingHandler implements InvocationHandler {
             }
             else{
                 res = tmp;
+                callCacheCount++;
             }
         }
         else{
             res =  method.invoke(target, args);
-            if(method.isAnnotationPresent(Mutator.class)) {
+            if(classMeth.isAnnotationPresent(Mutator.class)) {
                 isChanged = true;
             };
         };

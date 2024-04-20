@@ -3,6 +3,7 @@ package ru.kalinichenko.account;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AccountTest {
@@ -18,7 +19,8 @@ class AccountTest {
 
     @Test
     void withOwner() {
-        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {Account acc1 = new Account(""); });
+        Throwable thrown = assertThrows(IllegalArgumentException.class, () -> {
+            Account acc1 = new Account(""); });
         assertNull(thrown.getMessage());
     }
 
