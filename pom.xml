@@ -11,6 +11,7 @@
     <modules>
         <module>Cache</module>
         <module>Account</module>
+        <module>GarbageCollector</module>
     </modules>
     <dependencies>
         <dependency>
