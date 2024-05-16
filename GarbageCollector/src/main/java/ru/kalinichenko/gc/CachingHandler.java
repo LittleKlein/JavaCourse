@@ -87,7 +87,7 @@ class CachingHandler<T> implements InvocationHandler {
             cacheKey = currentObject.getClass().getSimpleName() + "." + currentMethod.getName() + "$" + state.hashCode();
             if (cache.containsKey(cacheKey)) {
                 cacheEntity = cache.get(cacheKey);
-                objectResult = cacheEntity.getValue();
+                objectResult = cacheEntity.getValue();  // Потенциальный NPE
                 cacheEntity.resetTime();
                 // Каждый раз при обращению к значению кэша, его время жизни обнуляется и начинает отсчитывать снова
                 cache.put(cacheKey, cacheEntity);

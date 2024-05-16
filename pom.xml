@@ -12,6 +12,7 @@
         <module>Cache</module>
         <module>Account</module>
         <module>GarbageCollector</module>
+        <module>Spring</module>
     </modules>
     <dependencies>
         <dependency>
