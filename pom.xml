@@ -12,7 +12,8 @@
         <module>Cache</module>
         <module>Account</module>
         <module>GarbageCollector</module>
-        <module>Spring</module>
+        <module>SpringTask4</module>
+        <module>RestTask5</module>
     </modules>
     <dependencies>
         <dependency>
